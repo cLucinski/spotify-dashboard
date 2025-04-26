@@ -1,8 +1,7 @@
-import os
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from spotify_auth import get_spotify_oauth, get_token, set_token_info
-from spotify_data import get_top_tracks
+from spotify_data import get_top_tracks_data, get_genre_distribution
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -36,5 +35,14 @@ def top_tracks():
     if not access_token:
         return JSONResponse({"status": "error", "message": "Access token missing."}, status_code=401)
 
-    data = get_top_tracks(access_token)
+    data = get_top_tracks_data(access_token)
     return JSONResponse({"status": "success", "data": data})
+
+@app.get("/api/genre-distribution")
+def genre_distribution():
+    access_token = get_token()
+    if not access_token:
+        return JSONResponse({"status": "error", "message": "Access token missing."}, status_code=401)
+
+    genres = get_genre_distribution(access_token)
+    return genres
